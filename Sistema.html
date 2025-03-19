@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão Escolar</title>
+    <link rel="shortcut icon" href="./LOGO DOMAG.jpg" type="x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('performance-canvas').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+            labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+            datasets: [{
+                label: 'Esta semana',
+                data: [12, 19, 3, 5],
+                borderColor: '#ff6b6b',
+            },{
+                label: 'Semana passada',
+                data: [2, 29, 5, 20],
+                borderColor: '#ffaa00',
+            }]
+        }
+    });
+</script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            background-color: #f0f2f5;
+        }
+        
+        .sidebar {
+            width: 200px;
+            height: 100vh;
+            background-color: #1a3a5e;
+            color: white;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            padding: 10px 20px;
+            margin-bottom: 20px;
+
+        }
+        
+        .logo img {
+            width: 80px;
+            border-radius: 75%;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50px 0 0 50px;
+            margin-right: 0;
+        }
+        
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .menu-item i {
+            margin-right: 15px;
+            font-size: 20px;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .main-content .sidebar {
+        view-transition-name: main-content;
+        }
+
+        ::view-transition-old(main-content),
+        ::view-transition-new(main-content) {
+        animation-duration: 0.5s;
+        }
+
+        @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dashboard-stats,
+        .performance-chart,
+        .student-list {
+        animation: fadeIn 0.5s ease-out;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a3a5e;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            border-radius: 20px;
+            padding: 8px 15px;
+            width: 300px;
+        }
+        
+        .search-bar input {
+            border: none;
+            outline: none;
+            flex: 1;
+            padding: 5px;
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .notifications, .settings {
+            margin-right: 15px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        .stat-item {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.stat-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.fa-trash {
+    color: #ff6b6b;
+    transition: transform 0.2s;
+}
+
+.fa-trash:hover {
+    transform: scale(1.2);
+}
+
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.notification-item.new {
+    background-color: #f8f9fa;
+}
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+        
+        .user-info {
+            text-align: right;
+            margin-right: 10px;
+        }
+        
+        .user-name {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .dashboard-stats {
+            display: flex;
+            justify-content: space-between;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .stat-icon.blue {
+            background-color: #e6f0ff;
+            color: #3366cc;
+        }
+        
+        .stat-icon.orange {
+            background-color: #ffebeb;
+            color: #ff6b6b;
+        }
+        
+        .stat-icon.yellow {
+            background-color: #fff8e6;
+            color: #ffaa00;
+        }
+        
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .performance-chart {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .chart-legend {
+            display: flex;
+            align-items: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+        
+        .legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .legend-color.orange {
+            background-color: #ff6b6b;
+        }
+        
+        .legend-color.yellow {
+            background-color: #ffaa00;
+        }
+        
+        .chart-canvas {
+            width: 100%;
+            height: 300px;
+        }
+        
+        .student-list {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .list-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .dropdown {
+            margin-right: 10px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .add-button {
+            padding: 8px 15px;
+            border-radius: 20px;
+            background-color: #4b30e0;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .add-button i {
+            margin-right: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            font-weight: normal;
+            color: #666;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e6f0ff;
+            color: #3366cc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .student-name {
+            display: flex;
+            align-items: center;
+        }
+        
+        .contact-icon {
+            cursor: pointer;
+            margin-right: 10px;
+            color: #666;
+        }
+        
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: white;
+        }
+        
+        .status-badge.orange {
+            background-color: #ff6b6b;
+        }
+        
+        .status-badge.yellow {
+            background-color: #ffaa00;
+        }
+        
+        .status-badge.purple {
+            background-color: #9933cc;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .page-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        
+        .page-number.active {
+            background-color: #4b30e0;
+            color: white;
+        }
+        
+        .page-number:hover:not(.active) {
+            background-color: #f0f0f0;
+        }
+        
+        .new-student-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .form-section {
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            background-color: #4b30e0;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-photo {
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .form-radio-group {
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-radio {
+            margin-right: 10px;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        
+        .btn-save {
+            padding: 8px 15px;
+            border-radius: 20px;
+            background-color: #4b30e0;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .btn-draft {
+            padding: 8px 15px;
+            border-radius: 20px;
+            background-color: white;
+            color: #666;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        
+        .activity-report {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .activity-list {
+            list-style-type: none;
+        }
+        
+        .activity-item {
+            display: flex;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e6f0ff;
+            color: #3366cc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        
+        .activity-info {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .activity-description {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .activity-meta {
+            text-align: right;
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .checkbox-container {
+            position: relative;
+            padding-left: 25px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 18px;
+            width: 18px;
+            background-color: #eee;
+            border-radius: 3px;
+        }
+        
+        .checkbox-container:hover input ~ .checkmark {
+            background-color: #ccc;
+        }
+        
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: #4b30e0;
+        }
+        
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+        
+        .checkbox-container .checkmark:after {
+            left: 6px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .actions-icon {
+            cursor: pointer;
+        }
+
+@media screen and (max-width: 330px) {
+    header body .menu-item .main-content .menu-item .menu-item.active .menu-item:hover .page-number .header .dashboard-stats .sidebar .logo .main-content .section .footer{
+   
+    padding: 1.26em 1.22em;
+    justify-content: center;
+     padding-bottom: 2rem;
+       }
+}
+@media screen and (max-width:708px) {
+    header body .menu-item .main-content .menu-item .menu-item.active .menu-item:hover .page-number .header .dashboard-stats .sidebar .logo .main-content .section .footer{
+       
+        padding: 1.26em 1.22em;
+        justify-content: center;
+     padding-bottom: 2rem;
+    }
+}
+@media screen and (max-width:1300px) {
+    header body .menu-item .main-content .menu-item .menu-item.active .menu-item:hover .page-number .header .dashboard-stats .sidebar .logo .main-content .section .footer{
+        padding: 1.26em 1.22em;
+        justify-content: center;
+     padding-bottom: 2rem;
+    }
+}
+@media screen and (max-width:1640px) {
+    header body .menu-item .main-content .menu-item .menu-item.active .menu-item:hover .page-number .header .dashboard-stats .sidebar .logo .main-content .section .footer{
+    grid-template-columns: repeat(6, 11rem);
+    padding: 1.26em 1.22em;
+        justify-content: center;
+     padding-bottom: 2rem;
+    }
+   }
+@media screen and (max-width:1800px) {
+    header body .menu-item .main-content .menu-item .menu-item.active .menu-item:hover .page-number .header .dashboard-stats .sidebar .logo .main-content .section .footer{
+    grid-template-columns: repeat(6, 13rem);
+    padding: 1.26em 1.22em;
+        justify-content: center;
+     padding-bottom: 2rem;
+    }
+}
+
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="./LOGO DOMAG.jpg" alt="DOMAG Tech Logo">
+        </div>
+        <div class="menu-item" id="dashboard-menu">
+            <i class="fas fa-home"></i>
+            <span>Painel</span>
+        </div>
+        <div class="menu-item" id="students-menu">
+            <i class="fas fa-user-friends"></i>
+            <span>Alunos</span>
+        </div>
+        <div class="menu-item" id="teachers-menu">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <span>Professores</span>
+        </div>
+        <div class="menu-item" id="reports-menu">
+            <i class="fas fa-file-alt"></i>
+            <span>Boletim Geral</span>
+        </div>
+        <div class="menu-item" id="admin-menu">
+            <i class="fas fa-cog"></i>
+            <span>Gestão Administrativa</span>
+        </div>
+        <div class="menu-item" id="user-menu">
+            <i class="fas fa-user"></i>
+            <span>Usuário</span>
+        </div>
+        <div class="menu-item" id="chat-menu">
+            <i class="fas fa-comments"></i>
+            <span>Bater papo</span>
+        </div>
+        <div class="menu-item" id="activities-menu">
+            <i class="fas fa-chart-line"></i>
+            <span>Crianças de atividade</span>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="header">
+            <div class="page-title" id="current-page-title">Painel</div>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Pesquise aqui...">
+            </div>
+            <div class="user-actions">
+                <div class="notifications">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="settings">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <div class="user-name">A.André</div>
+                        <div class="user-role">Admin</div>
+                    </div>
+                    <img src="./GÊ.jpg" alt="User Profile">
+                </div>
+            </div>
+        </div>
+        
+        <div id="dashboard-page">
+            <div class="dashboard-stats">
+                <div class="stat-item">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-number">2932</div>
+                        <div class="stat-label">Alunos ativos</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-number">124</div>
+                        <div class="stat-label">Professores</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon yellow">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-number">40</div>
+                        <div class="stat-label">Eventos</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon yellow">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-number">+3mil</div>
+                        <div class="stat-label">Boletins</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="performance-chart">
+                <div class="chart-header">
+                    <div class="chart-title">Desempenho escolar</div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-color orange"></div>
+                            <div>Essa semana</div>
+                            <div class="legend-value">1.245</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color yellow"></div>
+                            <div>Semana passada</div>
+                            <div class="legend-value">1.356</div>
+                        </div>
+                    </div>
+                </div>
+                <canvas id="performance-canvas" class="chart-canvas"></canvas>
+            </div>
+        </div>
+        
+        <div id="students-page" class="hidden">
+            <div class="list-header">
+                <div class="list-actions">
+                    <div class="dropdown">Mais novo</div>
+                    <button class="add-button" id="add-student-btn">
+                        <i class="fas fa-plus"></i>
+                        Novo aluno
+                    </button>
+                </div>
+            </div>
+            
+            <div class="student-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="select-all">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </th>
+                            <th>Nome</th>
+                            <th>Data</th>
+                            <th>Nome do pai</th>
+                            <th>Cidade</th>
+                            <th>Contato</th>
+                            <th>Nota</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <label class="checkbox-container">
+                                    <input type="checkbox" checked>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="student-name">
+                                    <div class="student-avatar">A</div>
+                                    Antonio
+                                </div>
+                            </td>
+                            <td>4 de março de 2003</td>
+                            <td>Isabel dos Santos</td>
+                            <td>Soyo</td>
+                            <td>
+                                <i class="fas fa-phone contact-icon"></i>
+                                <i class="fas fa-envelope contact-icon"></i>
+                            </td>
+                            <td><span class="status-badge orange">8.5</span></td>
+                            <td><i class="fas fa-ellipsis-v actions-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label class="checkbox-container">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="student-name">
+                                    <div class="student-avatar">J</div>
+                                    Gibson
+                                </div>
+                            </td>
+                            <td>2 de setembro de 2004</td>
+                            <td>Mateus Pedro</td>
+                            <td>Luanda</td>
+                            <td>
+                                <i class="fas fa-phone contact-icon"></i>
+                                <i class="fas fa-envelope contact-icon"></i>
+                            </td>
+                            <td><span class="status-badge yellow">7.8</span></td>
+                            <td><i class="fas fa-ellipsis-v actions-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label class="checkbox-container">
+                                    <input type="checkbox" checked>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="student-name">
+                                    <div class="student-avatar">O</div>
+                                    Orlando
+                                </div>
+                            </td>
+                            <td>24 de agosto de 2003</td>
+                            <td>Adão de Almeida</td>
+                            <td>K.Sul</td>
+                            <td>
+                                <i class="fas fa-phone contact-icon"></i>
+                                <i class="fas fa-envelope contact-icon"></i>
+                            </td>
+                            <td><span class="status-badge purple">9.1</span></td>
+                            <td><i class="fas fa-ellipsis-v actions-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label class="checkbox-container">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="student-name">
+                                    <div class="student-avatar">D</div>
+                                    Domingos
+                                </div>
+                            </td>
+                            <td>30 de junho de 2005</td>
+                            <td>Armando Vinagre</td>
+                            <td>Lubango</td>
+                            <td>
+                                <i class="fas fa-phone contact-icon"></i>
+                                <i class="fas fa-envelope contact-icon"></i>
+                            </td>
+                            <td><span class="status-badge yellow">7.5</span></td>
+                            <td><i class="fas fa-ellipsis-v actions-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label class="checkbox-container">
+                                    <input type="checkbox" checked>
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="student-name">
+                                    <div class="student-avatar">N</div>
+                                    Constantino
+                                </div>
+                            </td>
+                            <td>25 de dezembro de 2005</td>
+                            <td>Jack Songo</td>
+                            <td>Huambo</td>
+                            <td>
+                                <i class="fas fa-phone contact-icon"></i>
+                                <i class="fas fa-envelope contact-icon"></i>
+                            </td>
+                            <td><span class="status-badge orange">8.2</span></td>
+                            <td><i class="fas fa-ellipsis-v actions-icon"></i></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label class="checkbox-container">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </td>
+                            <td>
+                                <div class="student-name">
+                                    <div class="student-avatar">P</div>
+                                    Anderson
+                                </div>
+                            </td>
+                            <td>1 de janeiro de 2004</td>
+                            <td>Helder Conduto</td>
+                            <td>Luanda</td>
+                            <td>
+                                <i class="fas fa-phone contact-icon"></i>
+                                <i class="fas fa-envelope contact-icon"></i>
+                            </td>
+                            <td><span class="status-badge yellow">7.9</span></td>
+                            <td><i class="fas fa-ellipsis-v actions-icon"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="pagination">
+                    <div class="page-number active">1</div>
+                    <div class="page-number">2</div>
+                    <div class="page-number">3</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="add-student-page" class="hidden">
+            <div class="new-student-form">
+                <div class="form-section">
+                    <div class="section-title">Detalhes do aluno</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Foto *</label>
+                            <div class="form-photo">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                            <div style="font-size: 12px; color: #666; margin-top: 5px;">Arraste uma imagem ou clique para enviar</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Primeiro nome *</label>
+                            <input type="text" class="form-input" placeholder="Antonio">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sobrenome *</label>
+                            <input type="text" class="form-input" placeholder="André">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Data *</label>
+                            <input type="text" class="form-input" placeholder="16 de Fevereiro de 2004">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Gênero *</label>
+                            <input type="text" class="form-input" placeholder="Masculino">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nome do pai *</label>
+                            <input type="text" class="form-input" placeholder="Nome do pai">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">E-mail *</label>
+                            <input type="email" class="form-input" placeholder="exemplo@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Telefone *</label>
+                            <input type="tel" class="form-input" placeholder="+244 900 **********">
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="form-label">Endereço *</label>
+                            <textarea class="form-textarea" placeholder="Coloque seus dados"></textarea>
+                            <div style="font-size: 12px; color: #666; text-align: right; margin-top: 5px;">0/1000</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <div class="section-title">Detalhes dos pais</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Primeiro nome *</label>
+                            <input type="text" class="form-input" placeholder="Pedro">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Sobrenome *</label>
+                            <input type="text" class="form-input" placeholder="William">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">E-mail *</label>
+                            <input type="email" class="form-input" placeholder="exemplo@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Telefone *</label>
+                            <input type="tel" class="form-input" placeholder="+244 900 **********">
+                        </div>
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="form-label">Endereço *</label>
+                            <textarea class="form-textarea" placeholder="Coloque seus dados"></textarea>
+                            <div style="font-size: 12px; color: #666; text-align: right; margin-top: 5px;">0/1000</div>
+                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-section">
+                                    <div class="section-title">Detalhes acadêmicos</div>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">Número de matrícula *</label>
+                                            <input type="text" class="form-input" placeholder="CMAG2023001">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Classe *</label>
+                                            <input type="text" class="form-input" placeholder="10ª">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Turma *</label>
+                                            <input type="text" class="form-input" placeholder="A">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Ano lectivo *</label>
+                                            <input type="text" class="form-input" placeholder="2023-2024">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button class="btn-draft">Salvar como rascunho</button>
+                                    <button class="btn-save">Salvar</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="teachers-page" class="hidden">
+                            <div class="list-header">
+                                <div class="list-actions">
+                                    <div class="dropdown">Mais novo</div>
+                                    <button class="add-button">
+                                        <i class="fas fa-plus"></i>
+                                        Novo professor
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="student-list">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <label class="checkbox-container">
+                                                    <input type="checkbox" id="select-all-teachers">
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                            </th>
+                                            <th>Nome</th>
+                                            <th>Disciplina</th>
+                                            <th>Experiência</th>
+                                            <th>Cidade</th>
+                                            <th>Contato</th>
+                                            <th>Status</th>
+                                            <th>Ação</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <label class="checkbox-container">
+                                                    <input type="checkbox" checked>
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <div class="student-name">
+                                                    <div class="student-avatar">C</div>
+                                                    Carlos
+                                                </div>
+                                            </td>
+                                            <td>Matemática</td>
+                                            <td>10 anos</td>
+                                            <td>Luanda</td>
+                                            <td>
+                                                <i class="fas fa-phone contact-icon"></i>
+                                                <i class="fas fa-envelope contact-icon"></i>
+                                            </td>
+                                            <td><span class="status-badge purple">Ativo</span></td>
+                                            <td><i class="fas fa-ellipsis-v actions-icon"></i></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="checkbox-container">
+                                                    <input type="checkbox">
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <div class="student-name">
+                                                    <div class="student-avatar">M</div>
+                                                    Marta
+                                                </div>
+                                            </td>
+                                            <td>Biologia</td>
+                                            <td>8 anos</td>
+                                            <td>Luanda</td>
+                                            <td>
+                                                <i class="fas fa-phone contact-icon"></i>
+                                                <i class="fas fa-envelope contact-icon"></i>
+                                            </td>
+                                            <td><span class="status-badge orange">Ativo</span></td>
+                                            <td><i class="fas fa-ellipsis-v actions-icon"></i></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <label class="checkbox-container">
+                                                    <input type="checkbox">
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                            </td>
+                                            <td>
+                                                <div class="student-name">
+                                                    <div class="student-avatar">F</div>
+                                                    Fernando
+                                                </div>
+                                            </td>
+                                            <td>Física</td>
+                                            <td>5 anos</td>
+                                            <td>Luanda</td>
+                                            <td>
+                                                <i class="fas fa-phone contact-icon"></i>
+                                                <i class="fas fa-envelope contact-icon"></i>
+                                            </td>
+                                            <td><span class="status-badge yellow">Ativo</span></td>
+                                            <td><i class="fas fa-ellipsis-v actions-icon"></i></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <div class="pagination">
+                                    <div class="page-number active">1</div>
+                                    <div class="page-number">2</div>
+                                    <div class="page-number">3</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="reports-page" class="hidden">
+                            <div class="activity-report">
+                                <div class="activity-header">
+                                    <div class="chart-title">Boletim Geral</div>
+                                    <div class="dropdown">Este mês</div>
+                                </div>
+                                
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Classe</label>
+                                        <select class="form-input">
+                                            <option>Todas</option>
+                                            <option>10ª</option>
+                                            <option>11ª</option>
+                                            <option>12ª</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Turma</label>
+                                        <select class="form-input">
+                                            <option>Todas</option>
+                                            <option>A</option>
+                                            <option>B</option>
+                                            <option>C</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Período</label>
+                                        <select class="form-input">
+                                            <option>1º Trimestre</option>
+                                            <option>2º Trimestre</option>
+                                            <option>3º Trimestre</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Ano Lectivo</label>
+                                        <select class="form-input">
+                                            <option>2023-2024</option>
+                                            <option>2022-2023</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn-save" style="margin-top: 20px;">
+                                    <i class="fas fa-download"></i> Baixar relatório
+                                </button>
+                            </div>
+                        </div>
+                
+                        <div id="admin-page" class="hidden">
+                            <div class="activity-report">
+                                <div class="activity-header">
+                                    <div class="chart-title">Gestão Administrativa</div>
+                                </div>
+                                
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label">Departamento</label>
+                                        <select class="form-input">
+                                            <option>Todos</option>
+                                            <option>Finanças</option>
+                                            <option>Recursos Humanos</option>
+                                            <option>Informática</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Funcionários</label>
+                                        <select class="form-input">
+                                            <option>Todos</option>
+                                            <option>Activos</option>
+                                            <option>Inativos</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="student-list" style="margin-top: 20px;">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Nome</th>
+                                                <th>Cargo</th>
+                                                <th>Departamento</th>
+                                                <th>Data de Admissão</th>
+                                                <th>Status</th>
+                                                <th>Ação</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <div class="student-name">
+                                                        <div class="student-avatar">L</div>
+                                                        Luís Carlos
+                                                    </div>
+                                                </td>
+                                                <td>Diretor Financeiro</td>
+                                                <td>Finanças</td>
+                                                <td>01/03/2020</td>
+                                                <td><span class="status-badge purple">Ativo</span></td>
+                                                <td><i class="fas fa-ellipsis-v actions-icon"></i></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div class="student-name">
+                                                        <div class="student-avatar">S</div>
+                                                        Sofia Marques
+                                                    </div>
+                                                </td>
+                                                <td>Coordenadora RH</td>
+                                                <td>Recursos Humanos</td>
+                                                <td>15/05/2021</td>
+                                                <td><span class="status-badge orange">Ativo</span></td>
+                                                <td><i class="fas fa-ellipsis-v actions-icon"></i></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="user-profile-page" class="hidden">
+                            <div class="new-student-form">
+                                <div class="form-section">
+                                    <div class="section-title">Perfil do Usuário</div>
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">Foto</label>
+                                            <div class="form-photo">
+                                                <i class="fas fa-camera"></i>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Nome</label>
+                                            <input type="text" class="form-input" value="A.André">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" class="form-input" value="admin@cmagtech.com">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Cargo</label>
+                                            <input type="text" class="form-input" value="Administrador" disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Senha atual</label>
+                                            <input type="password" class="form-input">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Nova senha</label>
+                                            <input type="password" class="form-input">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Confirmar nova senha</label>
+                                            <input type="password" class="form-input">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button class="btn-save">Atualizar perfil</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="chat-page" class="hidden">
+                            <div class="activity-report">
+                                <div class="activity-header">
+                                    <div class="chart-title">Bater papo</div>
+                                </div>
+                                
+                                <div style="display: flex; height: 400px; border: 1px solid #eee; margin-top: 20px;">
+                                    <div style="width: 30%; border-right: 1px solid #eee; padding: 15px; overflow-y: auto;">
+                                        <div style="margin-bottom: 15px;">
+                                            <input type="text" class="form-input" placeholder="Pesquisar contatos...">
+                                        </div>
+                                        
+                                        <div style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center;">
+                                            <div class="student-avatar">M</div>
+                                            <div style="margin-left: 10px;">
+                                                <div style="font-weight: bold;">Maria Silva</div>
+                                                <div style="font-size: 12px; color: #666;">Online</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center; background-color: #f9f9f9;">
+                                            <div class="student-avatar">P</div>
+                                            <div style="margin-left: 10px;">
+                                                <div style="font-weight: bold;">Paulo Mendes</div>
+                                                <div style="font-size: 12px; color: #666;">Último acesso: 10min</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center;">
+                                            <div class="student-avatar">J</div>
+                                            <div style="margin-left: 10px;">
+                                                <div style="font-weight: bold;">José Carlos</div>
+                                                <div style="font-size: 12px; color: #666;">Offline</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="flex: 1; display: flex; flex-direction: column;">
+                                        <div style="padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                                            <div class="student-avatar">P</div>
+                                            <div style="margin-left: 10px; font-weight: bold;">Paulo Mendes</div>
+                                        </div>
+                                        
+                                        <div style="flex: 1; padding: 15px; overflow-y: auto;">
+                                            <div style="margin-bottom: 15px;">
+                                                <div style="background-color: #f0f0f0; padding: 10px; border-radius: 10px; display: inline-block; max-width: 70%;">
+                                                    Bom dia professor, tudo bem?
+                                                </div>
+                                                <div style="font-size: 12px; color: #666; margin-top: 5px;">09:30</div>
+                                            </div>
+                                            
+                                            <div style="margin-bottom: 15px; text-align: right;">
+                                                <div style="background-color: #4b30e0; color: white; padding: 10px; border-radius: 10px; display: inline-block; max-width: 70%;">
+                                                    Bom dia Paulo, tudo bem e contigo?
+                                                </div>
+                                                <div style="font-size: 12px; color: #666; margin-top: 5px;">09:32</div>
+                                            </div>
+                                            
+                                            <div style="margin-bottom: 15px;">
+                                                <div style="background-color: #f0f0f0; padding: 10px; border-radius: 10px; display: inline-block; max-width: 70%;">
+                                                    Estou bem! Gostaria de saber quando será a próxima aula de reforço?
+                                                </div>
+                                                <div style="font-size: 12px; color: #666; margin-top: 5px;">09:35</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="padding: 15px; border-top: 1px solid #eee; display: flex;">
+                                            <input type="text" class="form-input" placeholder="Digite sua mensagem..." style="flex: 1; margin-right: 10px;">
+                                            <button class="btn-save">Enviar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="activities-page" class="hidden">
+                            <div class="activity-report">
+                                <div class="activity-header">
+                                    <div class="chart-title">Cronograma de atividades</div>
+                                    <div class="dropdown">Este mês</div>
+                                </div>
+                                
+                                <ul class="activity-list">
+                                    <li class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas fa-calendar-check"></i>
+                                        </div>
+                                        <div class="activity-info">
+                                            <div class="activity-title">Feira de ciências</div>
+                                            <div class="activity-description">Apresentação dos projetos de ciências dos alunos da 10ª classe</div>
+                                        </div>
+                                        <div class="activity-meta">
+                                            <div>23 de Março</div>
+                                            <div>14:00 - 17:00</div>
+                                        </div>
+                                    </li>
+                                    <li class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <div class="activity-info">
+                                            <div class="activity-title">Reunião de pais</div>
+                                            <div class="activity-description">Reunião com os pais dos alunos da 11ª classe</div>
+                                        </div>
+                                        <div class="activity-meta">
+                                            <div>25 de Março</div>
+                                            <div>18:00 - 20:00</div>
+                                        </div>
+                                    </li>
+                                    <li class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas fa-graduation-cap"></i>
+                                        </div>
+                                        <div class="activity-info">
+                                            <div class="activity-title">Exames finais</div>
+                                            <div class="activity-description">Início dos exames finais do 1º trimestre</div>
+                                        </div>
+                                        <div class="activity-meta">
+                                            <div>15 de Abril</div>
+                                            <div>08:00 - 12:00</div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                
+                                <button class="add-button" style="margin-top: 20px;">
+                                    <i class="fas fa-plus"></i>
+                                    Nova atividade
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                    function saveDashboardLayout() {
+                        const layout = {
+                            statsOrder: [...document.querySelector('.dashboard-stats').children]
+                                    .map(stat => stat.dataset.type),
+                            chartType: document.getElementById('performance-canvas').dataset.chartType
+                        };
+                        
+                        localStorage.setItem('dashboardLayout', JSON.stringify(layout));
+                    }
+
+                    window.addEventListener('load', () => {
+                        const savedLayout = localStorage.getItem('dashboardLayout');
+                        if(savedLayout) applyCustomLayout(JSON.parse(savedLayout));
+                    });
+                    </script>
+                    <script>
+                        let students = JSON.parse(localStorage.getItem('students')) || [];
+                    
+                        function renderStudents() {
+                            const tbody = document.querySelector('#students-page tbody');
+                            tbody.innerHTML = students.map((student, index) => `
+                                <tr>
+                                    <td><input type="checkbox" ${student.active ? 'checked' : ''}></td>
+                                    <td>${student.name}</td>
+                                    <td>${student.birthDate}</td>
+                                    <td>${student.parent}</td>
+                                    <td>${student.city}</td>
+                                    <td>${student.contacts}</td>
+                                    <td><span class="status-badge">${student.grade}</span></td>
+                                    <td><i class="fas fa-ellipsis-v"></i></td>
+                                </tr>
+                            `).join('');
+                        }
+                    
+                        document.getElementById('add-student-btn').addEventListener('click', () => {
+                            const newStudent = {
+                                name: document.querySelector('[placeholder="Antonio"]').value,
+                                birthDate: document.querySelector('[placeholder="16 de Fevereiro"]').value,
+                                parent: document.querySelector('[placeholder="Nome do pai"]').value,
+                            };
+                            
+                            students.push(newStudent);
+                            localStorage.setItem('students', JSON.stringify(students));
+                            renderStudents();
+                            setActivePage('students-page');
+                        });
+                    </script>
+                    <script>
+                        const user = JSON.parse(localStorage.getItem('user'));
+                        document.querySelector('.user-name').textContent = user.name;
+                        document.querySelector('.user-role').textContent = user.role;
+
+                        document.querySelector('.settings').addEventListener('click', () => {
+                            localStorage.clear();
+                            window.location.href = 'Login.html';
+                        });
+                    </script>
+                    <script>
+                    function updateDashboardStats() {
+                        fetch('/api/dashboard-stats')
+                        .then(response => response.json())
+                        .then(data => {
+                            document.querySelector('.stat-number').innerHTML = data.activeStudents;
+                            document.querySelectorAll('.stat-number')[1].innerHTML = data.teachers;
+                            document.querySelectorAll('.stat-number').forEach(el => {
+                                el.style.transform = 'scale(1.2)';
+                                setTimeout(() => el.style.transform = 'scale(1)', 300);
+                            });
+                        });
+                    }
+                    
+                    setInterval(updateDashboardStats, 30000);
+                    </script>
+                    <script>
+                        document.querySelector('.btn-save').addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const requiredFields = document.querySelectorAll('[required]');
+                            let isValid = true;
+
+                            requiredFields.forEach(field => {
+                                if (!field.value) {
+                                    field.style.borderColor = 'red';
+                                    isValid = false;
+                                }
+                            });
+
+                            if (isValid) {
+                                showToast('Aluno cadastrado com sucesso!', 'success');
+                            }
+                        });
+                    </script>
+                    <script>
+                        document.querySelector('.search-bar input').addEventListener('input', (e) => {
+                            const term = e.target.value.toLowerCase();
+                            const rows = document.querySelectorAll('#students-page tbody tr');
+                            
+                            rows.forEach(row => {
+                                const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                                row.style.display = name.includes(term) ? '' : 'none';
+                            });
+                        });
+                    </script>
+                    <script>
+                        const menuItems = document.querySelectorAll('.menu-item');
+                        const pages = document.querySelectorAll('.main-content > div[id$="-page"]');
+                        const pageTitleElement = document.getElementById('current-page-title');
+                        
+                        function setActivePage(pageId) {
+                            pages.forEach(page => {
+                                page.classList.add('hidden');
+                            });
+                            
+                            const selectedPage = document.getElementById(pageId);
+                            if (selectedPage) {
+                                selectedPage.classList.remove('hidden');
+                            }
+                            
+                            menuItems.forEach(item => {
+                                item.classList.remove('active');
+                                if (item.id === pageId.replace('-page', '-menu')) {
+                                    item.classList.add('active');
+                                }
+                            });
+                            
+                            const pageTitle = pageId.replace('-page', '').replace(/-/g, ' ');
+                            pageTitleElement.textContent = pageTitle.charAt(0).toUpperCase() + pageTitle.slice(1);
+                        }
+                        
+                        setActivePage('dashboard-page');
+                        
+                        menuItems.forEach(item => {
+                            item.addEventListener('click', function() {
+                                const pageId = this.id.replace('-menu', '-page');
+                                setActivePage(pageId);
+                            });
+                        });
+                        
+                        document.getElementById('add-student-btn').addEventListener('click', function() {
+                            setActivePage('add-student-page');
+                        });
+                        
+                        const canvas = document.getElementById('performance-canvas');
+                        if (canvas && canvas.getContext) {
+                            const ctx = canvas.getContext('2d');
+                            ctx.beginPath();
+                            ctx.moveTo(0, 200);
+                            ctx.lineTo(100, 100);
+                            ctx.lineTo(200, 150);
+                            ctx.lineTo(300, 80);
+                            ctx.lineTo(400, 120);
+                            ctx.strokeStyle = '#ff6b6b';
+                            ctx.lineWidth = 3;
+                            ctx.stroke();
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(0, 220);
+                            ctx.lineTo(100, 120);
+                            ctx.lineTo(200, 170);
+                            ctx.lineTo(300, 100);
+                            ctx.lineTo(400, 140);
+                            ctx.strokeStyle = '#ffaa00';
+                            ctx.lineWidth = 3;
+                            ctx.stroke();
+                        }
+                    </script>
+                    <script>
+                        let dashboardData = JSON.parse(localStorage.getItem('dashboardData')) || {
+                            activeStudents: 2932,
+                            teachers: 124,
+                            events: 40,
+                            bulletins: 3000
+                        };
+                    
+                        function updateDashboard() {
+                            document.querySelectorAll('.stat-number')[0].textContent = dashboardData.activeStudents;
+                            document.querySelectorAll('.stat-number')[1].textContent = dashboardData.teachers;
+                            document.querySelectorAll('.stat-number')[2].textContent = dashboardData.events;
+                            document.querySelectorAll('.stat-number')[3].textContent = dashboardData.bulletins;
+                            
+                            localStorage.setItem('dashboardData', JSON.stringify(dashboardData));
+                        }
+                    
+                        setInterval(() => {
+                            dashboardData.activeStudents += Math.floor(Math.random() * 10);
+                            updateDashboard();
+                        }, 5000);
+                    </script>
+                    <script>
+                       07 let users = JSON.parse(localStorage.getItem('users')) || [];
+                        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                    
+                        document.querySelector('#user-profile-page .btn-save').addEventListener('click', (e) => {
+                            e.preventDefault();
+                            
+                            const updatedUser = {
+                                ...currentUser,
+                                name: document.querySelector('#user-profile-page [type="text"]').value,
+                                email: document.querySelector('#user-profile-page [type="email"]').value,
+                                password: document.querySelector('#user-profile-page [type="password"]').value
+                            };
+                    
+                            users = users.map(u => u.email === currentUser.email ? updatedUser : u);
+                            localStorage.setItem('users', JSON.stringify(users));
+                            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                            
+                            document.querySelector('.user-name').textContent = updatedUser.name;
+                            showToast('Perfil atualizado!', 'success');
+                        });
+                    </script>
+                    <script>
+                        let students = JSON.parse(localStorage.getItem('students')) || [];
+                        
+                        function renderStudents() {
+                            const tbody = document.querySelector('#students-page tbody');
+                            tbody.innerHTML = students.map((student, index) => `
+                                <tr>
+                                    <td>
+                                        <label class="checkbox-container">
+                                            <input type="checkbox" data-id="${index}">
+                                            <span class="checkmark"></span>
+                                        </label>
+                                    </td>
+                                    <td>${student.name}</td>
+                                    <td>${student.birthDate}</td>
+                                    <td>${student.parent}</td>
+                                    <td>${student.city}</td>
+                                    <td>
+                                        <i class="fas fa-phone contact-icon"></i>
+                                        ${student.phone}
+                                    </td>
+                                    <td><span class="status-badge ${student.grade > 8 ? 'purple' : 'orange'}">${student.grade}</span></td>
+                                    <td>
+                                        <i class="fas fa-trash actions-icon" onclick="deleteStudent(${index})"></i>
+                                    </td>
+                                </tr>
+                            `).join('');
+                        }
+                    
+                        function deleteStudent(index) {
+                            students.splice(index, 1);
+                            localStorage.setItem('students', JSON.stringify(students));
+                            renderStudents();
+                            updateDashboard();
+                        }
+                        document.querySelector('.btn-save').addEventListener('click', (e) => {
+                            e.preventDefault();
+                            
+                            const newStudent = {
+                                name: document.querySelector('[placeholder="Antonio"]').value,
+                                birthDate: document.querySelector('[placeholder="16 de Fevereiro de 2004"]').value,
+                                parent: document.querySelector('[placeholder="Nome do pai"]').value,
+                                city: document.querySelector('[placeholder="Soyo"]').value,
+                                phone: document.querySelector('[type="tel"]').value,
+                                grade: parseFloat(document.querySelector('.status-badge').textContent) || 0
+                            };
+                    
+                            students.push(newStudent);
+                            localStorage.setItem('students', JSON.stringify(students));
+                            
+                            dashboardData.activeStudents++;
+                            updateDashboard();
+                            
+                            renderStudents();
+                            setActivePage('students-page');
+                            showToast('Aluno cadastrado com sucesso!', 'success');
+                        });
+                    </script>
+                    <script>
+                        const user = JSON.parse(localStorage.getItem('user'));
+                        document.querySelector('.user-name').textContent = user.name;
+                        document.querySelector('.user-role').textContent = user.role;
+
+                        document.querySelector('.settings').addEventListener('click', () => {
+                            localStorage.clear();
+                            window.location.href = 'Login.html';
+                        });
+                    </script>
+    </body>
+</html>
+                
